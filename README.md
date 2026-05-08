@@ -1,54 +1,54 @@
-# docs
+# Manic Docs
 
-Published documentation: https://www.manicjs.tech/docs
+Official documentation site for the Manic framework.
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+- Live docs: [manicjs.tech/docs](https://manicjs.tech/docs)
+- Repo: [manic-js/docs](https://github.com/manic-js/docs)
 
-Run development server:
+## Tech Stack
 
-```bash
-bun install   # postinstall runs fumadocs-mdx → fills docs/.source/server.ts (gitignored)
-bun run dev   # predev runs fumadocs-mdx again so stale/empty .source never breaks imports
-```
+- Next.js (App Router)
+- Fumadocs + MDX
+- Bun runtime and package manager
+- TypeScript
 
-If you see **`Export docs doesn't exist`** from **`collections/server`**, **`docs/.source/server.ts`** was missing or empty — run **`bun x fumadocs-mdx`** in **`docs/`** (or reinstall so **`postinstall`** runs).
-
-Legacy package managers:
+## Local Development
 
 ```bash
-npm run dev
-pnpm dev
-yarn dev
+bun install
+bun run dev
 ```
 
-Open http://localhost:3000 with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Explore
+## Important Scripts
 
-In the project, you can see:
+- `bun run dev` - start dev server
+- `bun run build` - production build
+- `bun run start` - run production server
+- `bun run types:check` - generate types + TypeScript check
+- `bun run lint` - run oxlint
 
-- `lib/source.ts`: Code for content source adapter, [`loader()`](https://fumadocs.dev/docs/headless/source-api) provides the interface to access your content.
-- `lib/layout.shared.tsx`: Shared options for layouts, optional but preferred to keep.
+## Content Structure
 
-| Route                     | Description                                            |
-| ------------------------- | ------------------------------------------------------ |
-| `app/(home)`              | The route group for your landing page and other pages. |
-| `app/docs`                | The documentation layout and pages.                    |
-| `app/api/search/route.ts` | The Route Handler for search.                          |
+- `content/docs/` - all documentation pages (`.mdx`)
+- `app/docs/` - docs routes and page shell
+- `lib/source.ts` - content source loader
+- `source.config.ts` - MDX/Fumadocs source configuration
 
-### Fumadocs MDX
+## SEO Notes
 
-A `source.config.ts` config file has been included, you can customise different options like frontmatter schema.
+- Canonical domain is `https://manicjs.tech`
+- Robots and sitemap are generated via Next metadata routes:
+  - `app/robots.ts`
+  - `app/sitemap.ts`
 
-Read the [Introduction](https://fumadocs.dev/docs/mdx) for further details.
+## Troubleshooting
 
-## Learn More
+If you see an error like `Export docs doesn't exist` from Fumadocs collections, regenerate sources:
 
-To learn more about Next.js and Fumadocs, take a look at the following
-resources:
+```bash
+bunx fumadocs-mdx
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Fumadocs](https://fumadocs.dev) - learn about Fumadocs
+Then restart the dev server.
