@@ -16,15 +16,7 @@
     "incremental": true,
     "paths": {
       "@/*": ["./*"],
-      "collections/*": ["./.source/*"],
-      "manicjs": ["../packages/manic/index.ts"],
-      "manicjs/router": ["../packages/manic/src/router/index.ts"],
-      "manicjs/plugins": ["../packages/manic/src/plugins/index.ts"],
-      "manicjs/server": ["../packages/manic/src/server/index.ts"],
-      "manicjs/config": ["../packages/manic/src/config/index.ts"],
-      "manicjs/env": ["../packages/manic/src/env/client.ts"],
-      "manicjs/client": ["../packages/manic/src/config/client.ts"],
-      "manicjs/transitions": ["../packages/manic/src/transitions/index.ts"]
+      "collections/*": ["./.source/*"]
     },
     "types": ["bun"],
     "plugins": [
