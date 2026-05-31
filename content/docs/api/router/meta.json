@@ -6,6 +6,7 @@
     "router",
     "router-context",
     "link",
+    "image",
     "navigate",
     "use-router",
     "use-query-params",

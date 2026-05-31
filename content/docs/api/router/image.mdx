@@ -1,0 +1,77 @@
+---
+title: Image
+description: High-performance Image optimization component for Manic.
+---
+
+# `<Image />`
+
+The `<Image>` component replaces standard HTML `<img>` elements with optimized layout stability and server-side SIMD-accelerated WebP transformation.
+
+---
+
+## Component Signature
+
+```tsx
+import { Image } from 'manicjs';
+
+type ImageProps = {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  quality?: number;
+  [key: string]: any; // Accepts all other standard img attributes
+};
+```
+
+---
+
+## Features
+
+- **Layout Stability**: Requires `width` and `height` properties to reserve dimensions and prevent Cumulative Layout Shift (CLS) layout jumps (unless using vector `.svg` files).
+- **SIMD Optimization**: Sourced images are processed server-side through Bun's native image engine, yielding optimized `.webp` outputs with speedups up to 2.9x compared to standard Node.js/Sharp engines.
+- **SVG Pass-through**: SVG images are automatically delivered directly as vectors without rasterization or resizing.
+
+---
+
+## Examples
+
+### Basic Usage with Dimensions
+
+```tsx
+import { Image } from 'manicjs';
+
+export default function Logo() {
+  return (
+    <Image 
+      src="/assets/logo.png" 
+      alt="Manic Logo" 
+      width={300} 
+      height={100} 
+    />
+  );
+}
+```
+
+### SVG Image Usage (No Dimensions Needed)
+
+```tsx
+import { Image } from 'manicjs';
+
+export default function Icon() {
+  return (
+    <Image 
+      src="/assets/icon.svg" 
+      alt="Search Icon" 
+    />
+  );
+}
+```
+
+---
+
+## Linter Enforcement
+
+To ensure layout stability and layout speed, the framework enforces these conventions natively under `@manicjs/lint`:
+- `manic/no-raw-img-element`: Banned use of raw `<img>` tags.
+- `manic/image-needs-dimensions`: Flags `<Image />` tags missing both `width` and `height` properties unless referencing vector `.svg` files.

@@ -170,7 +170,16 @@ import { setViewTransitions } from 'manicjs';
 setViewTransitions(false);
 ```
 
-Or set `router.viewTransitions: false` in [`manic.config.ts`](/docs/api/config).
+### External Links & Hash Jumps
+
+`<Link />` automatically detects and processes non-routing destinations:
+- **Hash/Anchor Jumps**: Links starting with `#` (e.g. `to="#features"`) bypass SPA routing and perform native scroll jumps.
+- **External URLs**: Absolute URLs starting with `http://`, `https://`, or `//` bypass client-side routing and act as normal external links.
+
+```tsx
+<Link to="#features">Jump to Section</Link>
+<Link to="https://github.com/manic-js" target="_blank">External Link</Link>
+```
 
 ## Type Definitions
 
