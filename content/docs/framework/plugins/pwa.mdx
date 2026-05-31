@@ -1,0 +1,132 @@
+---
+title: PWA
+description: App manifest, install metadata, and offline caching support for Manic.
+---
+
+# PWA (Progressive Web App)
+
+The PWA plugin automatically adds Progressive Web App support to your Manic project. It generates a web app manifest (`manifest.json`), installs a custom Service Worker (`sw.js`) for offline capabilities, and handles browser-side service worker registration with smart fallback overrides.
+
+## Features
+
+- **Web App Manifest**: Automatically builds and serves `manifest.json`.
+- **Offline & Runtime Caching**: Caches static assets, chunks, and page navigations.
+- **Smart Fallbacks**:
+  - Automatically crawls `app/index.html` to find your favicon if no icons are defined.
+  - Automatically fetches metadata (like title, description) from the **SEO plugin** if used.
+- **Richer Install UI**: Supports screenshots and custom short names for application installation banners.
+- **Auto-Registration**: Handles local and production service worker registration with update checking.
+
+## Installation
+
+```bash
+bun add @manicjs/pwa
+```
+
+## Quick Start
+
+### 1. Configure the Plugin
+
+Add `pwa()` to your `manic.config.ts` plugins array:
+
+```ts
+// manic.config.ts
+import { defineConfig } from 'manicjs/config';
+import { pwa } from '@manicjs/pwa';
+
+export default defineConfig({
+  plugins: [
+    pwa({
+      name: 'My Cool App',
+      shortName: 'CoolApp',
+      themeColor: '#101010',
+      backgroundColor: '#ffffff',
+      registerOnLocalhost: true, // Allow Service Worker on localhost for testing
+    }),
+  ],
+});
+```
+
+That's it! In dev and build mode, Manic will serve:
+* `/manifest.json`
+* `/sw.js` (Service Worker)
+
+---
+
+## Smart Fallbacks
+
+### Favicon Automatic Grabbing
+If you do not specify the `icons` array in your `pwa()` configuration, the plugin will look into `app/index.html` on compile time, extract your `<link rel="icon">` (or similar) tag, and use it as the default manifest icon (supporting SVG, PNG, WebP, and ICO).
+
+### SEO Plugin Integration
+If the `@manicjs/seo` plugin is registered, `pwa()` will automatically fallback to the SEO `title` and `description` configurations if `name` or `description` are omitted from the PWA config, ensuring you don't have to duplicate metadata.
+
+---
+
+## Configuration Options
+
+Here is the complete list of options you can pass to the `pwa()` plugin:
+
+| Option | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `name` | `string` | *(Fallback: SEO title / App name)* | Full application name shown during install. |
+| `shortName` | `string` | *(Fallback: `name`)* | Short name for launcher surfaces and home screen icon text. |
+| `description` | `string` | *(Fallback: SEO description)* | Detailed application description. |
+| `startUrl` | `string` | `"/"` | The URL launched when starting the PWA. |
+| `scope` | `string` | `"/"` | The navigation scope of the PWA. |
+| `display` | `string` | `"standalone"` | App display mode (`fullscreen`, `standalone`, `minimal-ui`, `browser`). |
+| `themeColor` | `string` | `"#000000"` | The browser theme color overlay. |
+| `backgroundColor` | `string` | `"#ffffff"` | Loading screen background color. |
+| `registerOnLocalhost` | `boolean` | `false` | Enable registration on `localhost` for local dev/testing. |
+| `icons` | `PwaIcon[]` | *(Auto-detected)* | Custom manifest icons arrays (`src`, `sizes`, `type`, `purpose`). |
+| `screenshots` | `PwaScreenshot[]` | `[]` | App screenshots for Richer Install UI (`src`, `sizes`, `type`, `formFactor`). |
+
+### Registering Screenshots (Richer Install UI)
+
+For platforms that support rich app store install dialogs (like Chrome on Android or Desktop), you can register screenshots with different form factors:
+
+```ts
+pwa({
+  name: 'My Cool App',
+  screenshots: [
+    {
+      src: '/assets/screenshot-mobile.png',
+      sizes: '1080x1920',
+      type: 'image/png',
+      formFactor: 'narrow', // Mobile Rich UI
+    },
+    {
+      src: '/assets/screenshot-desktop.png',
+      sizes: '1920x1080',
+      type: 'image/png',
+      formFactor: 'wide',  // Desktop Rich UI
+    }
+  ]
+})
+```
+
+---
+
+## Caching & Caching Strategies
+
+By default, the Service Worker automatically caches asset folders (`/assets/`, `/chunks/`, `/_bun/`) with a `cache-first` strategy and routes navigating to pages with a fallback strategy.
+
+You can configure fine-grained runtime caching routes inside `pwa`:
+
+```ts
+pwa({
+  name: 'My App',
+  runtimeCaches: [
+    {
+      pathPrefix: '/api/',
+      strategy: 'network-first', // Cache API calls, falling back to cached response
+      maxAgeSeconds: 30,         // Cache validity limit
+    },
+    {
+      pathPrefix: '/images/',
+      strategy: 'cache-first',
+      cacheName: 'image-assets',
+    }
+  ]
+})
+```

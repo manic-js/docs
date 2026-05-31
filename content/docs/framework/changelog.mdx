@@ -5,6 +5,20 @@ description: Recent framework and CLI updates.
 
 # Changelog
 
+## 2026-05-31
+
+### Features
+
+- Added new official plugin: **`@manicjs/pwa`** for App Manifest, Service Worker caching/strategies, and iOS meta tags.
+- Enabled auto-grabbing of default favicon from `app/index.html` as PWA icon fallback.
+- Added dynamic metadata fallback loading from the `@manicjs/seo` plugin and core `ctx.config.app?.name`.
+
+### Bug Fixes and Stability
+
+- **Core**: Fixed a bug where `htmlInjections` were bypassed by the development proxy (`htmlBundleNonce`), preventing plugins from injecting custom header tags (like CSS, manifest links, and scripts) in the dev server.
+- **Providers**: Conditionally write adapter configuration files (`wrangler.toml`, `netlify.toml`, `vercel.json`) only if they do not already exist on disk, preserving manual modifications.
+- **Bundler**: Resolved potential builder errors by providing a fallback empty array if `clientPlugins` is undefined.
+
 ## 2026-05-07
 
 ### CLI and scaffold improvements
