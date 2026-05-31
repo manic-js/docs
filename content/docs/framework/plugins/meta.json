@@ -2,6 +2,7 @@
   "title": "Plugins",
   "pages": [
     "index",
+    "lint",
     "tailwind",
     "unocss",
     "mdx",

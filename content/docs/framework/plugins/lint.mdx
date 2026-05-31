@@ -1,0 +1,123 @@
+---
+title: Linter Rules (Oxlint)
+description: Enforcing framework standards, accessibility, and performance using native Oxlint JS plugins.
+---
+
+# Linter Rules (`@manicjs/lint`)
+
+Manic enforces production-grade performance, accessibility, and routing conventions using native [Oxlint](https://oxc.rs/) custom rules. Rather than using slow regex wrappers, Manic runs ESLint-compatible AST traversals natively within Oxlint's Rust engine via `@manicjs/lint`.
+
+---
+
+## Installation
+
+The `@manicjs/lint` plugin is installed automatically in new Manic projects, but you can also add it manually to existing workspaces:
+
+```bash
+bun add @manicjs/lint
+```
+
+---
+
+## Configuration
+
+Enable the custom rules in your project's `.oxlintrc.json` configuration file by adding the plugin to the `jsPlugins` array and enabling the rules:
+
+```json
+{
+  "jsPlugins": [
+    {
+      "name": "manic",
+      "specifier": "@manicjs/lint"
+    }
+  ],
+  "rules": {
+    "manic/no-raw-img-element": "warn",
+    "manic/no-raw-anchor-element": "warn",
+    "manic/image-needs-dimensions": "warn",
+    "manic/routes-require-default-export": "error",
+    "manic/no-sibling-route-import": "error"
+  }
+}
+```
+
+---
+
+## Enforced Linting Rules
+
+### 1. `manic/no-raw-img-element` (Warning)
+Bans the use of raw HTML `<img>` elements in favor of the framework's optimized `<Image />` component.
+- **Why**: `<Image />` enables automatic layout stability (preventing Cumulative Layout Shift) and uses server-side SIMD-accelerated image optimizations.
+- **Incorrect**:
+  ```tsx
+  <img src="/assets/logo.png" alt="Logo" />
+  ```
+- **Correct**:
+  ```tsx
+  import { Image } from 'manicjs';
+  
+  <Image src="/assets/logo.png" alt="Logo" />
+  ```
+
+---
+
+### 2. `manic/no-raw-anchor-element` (Warning)
+Bans the use of raw HTML `<a>` tags in favor of the framework's routing `<Link />` component.
+- **Why**: `<Link />` intercept routing natively to trigger superfast SPA view transitions, bypassing full page reloads.
+- **Incorrect**:
+  ```tsx
+  <a href="/about">About Us</a>
+  ```
+- **Correct**:
+  ```tsx
+  import { Link } from 'manicjs';
+  
+  <Link to="/about">About Us</Link>
+  ```
+
+---
+
+### 3. `manic/image-needs-dimensions` (Warning)
+Requires `<Image />` components to explicitly declare both `width` and `height` properties unless the source (`src`) is a static vector (`.svg`) file.
+- **Why**: Reserving layout boxes before image load improves visual stability and prevents CLS layout jumps.
+- **Incorrect**:
+  ```tsx
+  <Image src="/logo.png" alt="Logo" />
+  ```
+- **Correct**:
+  ```tsx
+  <Image src="/logo.png" alt="Logo" width={100} height={100} />
+  ```
+
+---
+
+### 4. `manic/routes-require-default-export` (Error)
+Ensures that all route components (inside `app/routes/` but not prefixed with `~`) contain a default export.
+- **Why**: Manic’s router discovery scanner expects every routing page entry to export its component as the default export. Missing default exports result in blank route pages.
+- **Incorrect**:
+  ```tsx
+  export function Home() {
+    return <h1>Home</h1>;
+  }
+  ```
+- **Correct**:
+  ```tsx
+  export default function Home() {
+    return <h1>Home</h1>;
+  }
+  ```
+
+---
+
+### 5. `manic/no-sibling-route-import` (Error)
+Bans importing components or functions directly from sibling route files.
+- **Why**: Direct routing sibling imports break route isolation, cause duplicate bundling sizes, and complicate hot-module-reload (HMR) propagation.
+- **Solution**: Move shared code to a component folder (e.g. `app/components/`) or a route file prefixed with `~` (e.g. `app/routes/~shared.tsx`).
+- **Incorrect**:
+  ```tsx
+  import SiblingComponent from './sibling-page.tsx';
+  ```
+- **Correct**:
+  ```tsx
+  import SharedComponent from '~/components/SharedComponent';
+  ```
