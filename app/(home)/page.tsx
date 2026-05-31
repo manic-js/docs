@@ -2,7 +2,6 @@ import { CopyInstallCommand } from '@/components/CopyInstallCommand';
 import { HomeCTA } from '@/components/HomeCTA';
 import { FreeOpenSourceSection } from '@/components/FreeOpenSourceSection';
 import { CTASection } from '@/components/CTASection';
-import { Footer } from '@/components/Footer';
 import { gitConfig } from '@/lib/shared';
 import { ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
