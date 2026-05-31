@@ -5,6 +5,15 @@ import { appName } from '@/lib/shared';
 
 export const revalidate = false;
 
+// Fetch fonts at build time
+const fontRegularPromise = fetch(
+  'https://cdn.jsdelivr.net/npm/@fontsource/inter/files/inter-latin-400-normal.woff'
+).then(res => res.arrayBuffer());
+
+const fontBoldPromise = fetch(
+  'https://cdn.jsdelivr.net/npm/@fontsource/inter/files/inter-latin-700-normal.woff'
+).then(res => res.arrayBuffer());
+
 export async function GET(
   _req: Request,
   { params }: RouteContext<'/og/docs/[...slug]'>
@@ -41,6 +50,12 @@ export async function GET(
   const title = page.data.title;
   const description = page.data.description || '';
 
+  // Await font buffers
+  const [fontRegular, fontBold] = await Promise.all([
+    fontRegularPromise,
+    fontBoldPromise,
+  ]);
+
   return new ImageResponse(
     <div
       style={{
@@ -50,26 +65,42 @@ export async function GET(
         flexDirection: 'column',
         justifyContent: 'space-between',
         backgroundColor: '#070708',
-        backgroundImage: `radial-gradient(circle at 100% 100%, ${tabColor}1f, transparent 55%), radial-gradient(circle at 0% 0%, ${tabColor}0d, transparent 35%)`,
-        padding: '80px',
+        backgroundImage: `radial-gradient(circle at 85% 15%, ${tabColor}1f, transparent 50%), radial-gradient(circle at 15% 85%, ${tabColor}0d, transparent 35%)`,
+        padding: '70px 80px',
         boxSizing: 'border-box',
         position: 'relative',
-        fontFamily: 'sans-serif',
+        fontFamily: 'Inter, sans-serif',
       }}
     >
-      {/* Left Accent Highlight bar */}
+      {/* Outer border to give a card feel */}
       <div
         style={{
           position: 'absolute',
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: '8px',
-          backgroundColor: tabColor,
+          top: '30px',
+          bottom: '30px',
+          left: '30px',
+          right: '30px',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          borderRadius: '24px',
+          pointerEvents: 'none',
         }}
       />
 
-      {/* Top Header Row */}
+      {/* Left accent indicator */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '30px',
+          top: '80px',
+          bottom: '80px',
+          width: '6px',
+          borderRadius: '99px',
+          backgroundColor: tabColor,
+          boxShadow: `0 0 20px ${tabColor}`,
+        }}
+      />
+
+      {/* Header Row */}
       <div
         style={{
           display: 'flex',
@@ -79,7 +110,7 @@ export async function GET(
           width: '100%',
         }}
       >
-        {/* Logo & Brand Name */}
+        {/* Brand Group */}
         <div
           style={{
             display: 'flex',
@@ -89,8 +120,8 @@ export async function GET(
           }}
         >
           <svg
-            width="48"
-            height="48"
+            width="44"
+            height="44"
             viewBox="0 0 128 128"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -105,35 +136,45 @@ export async function GET(
           </svg>
           <span
             style={{
-              fontSize: '28px',
-              fontWeight: 'bold',
+              fontSize: '32px',
+              fontWeight: 700,
               color: '#ffffff',
-              letterSpacing: '-0.5px',
+              letterSpacing: '-1px',
             }}
           >
             {appName}
           </span>
         </div>
 
-        {/* Tab Category Badge */}
+        {/* Tab category badge */}
         <div
           style={{
             display: 'flex',
-            padding: '6px 14px',
-            borderRadius: '99px',
-            backgroundColor: `${tabColor}1a`,
-            border: `1px solid ${tabColor}50`,
+            flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: '99px',
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
+          <div
+            style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: tabColor,
+              boxShadow: `0 0 10px ${tabColor}`,
+            }}
+          />
           <span
             style={{
               fontSize: '14px',
-              fontWeight: 'bold',
-              color: tabColor,
+              fontWeight: 700,
+              color: '#ffffff',
               textTransform: 'uppercase',
-              letterSpacing: '1.5px',
+              letterSpacing: '1px',
             }}
           >
             {tabName}
@@ -141,23 +182,23 @@ export async function GET(
         </div>
       </div>
 
-      {/* Content Section */}
+      {/* Main Content Area */}
       <div
         style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '20px',
+          gap: '16px',
           width: '100%',
+          paddingLeft: '24px',
         }}
       >
         <span
           style={{
             fontSize: '64px',
-            fontWeight: 800,
+            fontWeight: 700,
             color: '#ffffff',
             lineHeight: 1.15,
-            letterSpacing: '-1.5px',
-            width: '100%',
+            letterSpacing: '-2px',
             display: 'block',
           }}
         >
@@ -165,10 +206,10 @@ export async function GET(
         </span>
         <span
           style={{
-            fontSize: '26px',
-            color: '#9ba1a6',
-            lineHeight: 1.45,
-            maxWidth: '900px',
+            fontSize: '28px',
+            color: '#a1a1aa',
+            lineHeight: 1.5,
+            maxWidth: '920px',
             display: 'block',
           }}
         >
@@ -176,7 +217,7 @@ export async function GET(
         </span>
       </div>
 
-      {/* Footer info */}
+      {/* Footer Area */}
       <div
         style={{
           display: 'flex',
@@ -184,15 +225,31 @@ export async function GET(
           justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%',
-          borderTop: '1px solid #ffffff10',
+          borderTop: '1px solid rgba(255, 255, 255, 0.06)',
           paddingTop: '24px',
+          paddingLeft: '24px',
         }}
       >
-        <span style={{ fontSize: '16px', color: '#52585f' }}>
-          documentation site
+        <span
+          style={{
+            fontSize: '16px',
+            color: '#71717a',
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
+            fontWeight: 600,
+          }}
+        >
+          Documentation
         </span>
-        <span style={{ fontSize: '18px', fontWeight: 'bold', color: tabColor }}>
-          manic.js.org
+        <span
+          style={{
+            fontSize: '20px',
+            fontWeight: 700,
+            color: tabColor,
+            letterSpacing: '-0.5px',
+          }}
+        >
+          manicjs.tech
         </span>
       </div>
     </div>,
@@ -200,6 +257,20 @@ export async function GET(
       width: 1200,
       height: 630,
       format: 'webp',
+      fonts: [
+        {
+          name: 'Inter',
+          data: fontRegular,
+          weight: 400,
+          style: 'normal',
+        },
+        {
+          name: 'Inter',
+          data: fontBold,
+          weight: 700,
+          style: 'normal',
+        },
+      ],
     }
   );
 }
